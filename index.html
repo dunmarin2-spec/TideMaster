@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TideGuard - 실시간 전국 물때</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌊</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@600;800&family=Nanum+Pen+Script&display=swap');
         body { font-family: 'Pretendard', sans-serif; background-color: #020617; color: #fff; }
@@ -22,7 +20,7 @@
                 <span class="chan-doong-signature">찬둥의</span>
                 <h1 class="text-3xl font-black text-sky-400 italic tracking-tighter">TideGuard</h1>
             </div>
-            <div class="text-right text-[10px] text-slate-500 font-bold uppercase text-sky-500">Bypass Mode</div>
+            <div class="text-right text-[10px] text-slate-500 font-bold uppercase text-sky-500">V2 Hybrid Mode</div>
         </header>
 
         <div class="mb-6">
@@ -34,7 +32,6 @@
                 <option value="DT_0007">여수 (Yeosu)</option>
                 <option value="DT_0009">부산 (Busan)</option>
                 <option value="DT_0011">포항 (Pohang)</option>
-                <option value="DT_0013">속초 (Sokcho)</option>
                 <option value="DT_0014">제주 (Jeju)</option>
                 <option value="DT_0035">보령 (Boryeong)</option>
             </select>
@@ -42,7 +39,7 @@
 
         <div id="mainDisplay" class="tide-card mb-4 text-center py-10 relative overflow-hidden">
             <div id="loadingOverlay" class="absolute inset-0 bg-slate-900/90 flex items-center justify-center z-50 hidden">
-                <div class="animate-pulse font-bold text-sky-400">보안 우회 통신 중...</div>
+                <div class="animate-pulse font-bold text-sky-400">데이터 수신 중...</div>
             </div>
             <p id="updateTime" class="text-[9px] text-slate-500 mb-1">REALTIME DATA BY CHAN-DOONG</p>
             <h2 id="statusTitle" class="text-3xl font-black text-white italic">SELECT AREA</h2>
@@ -50,29 +47,33 @@
 
         <div class="grid grid-cols-2 gap-3 mb-8">
             <div class="tide-card text-center p-5 border-b-4 border-b-sky-500">
-                <p class="text-[10px] text-sky-400 font-bold uppercase mb-2">만조 (고조)</p>
-                <div id="highTide" class="text-lg font-black text-white whitespace-pre-line leading-tight">--:--</div>
+                <p class="text-[10px] text-sky-400 font-bold uppercase mb-2">만조 (High)</p>
+                <div id="highTide" class="text-sm font-black text-white whitespace-pre-line leading-tight">--:--</div>
             </div>
             <div class="tide-card text-center p-5 border-b-4 border-b-rose-500">
-                <p class="text-[10px] text-rose-400 font-bold uppercase mb-2">간조 (저조)</p>
-                <div id="lowTide" class="text-lg font-black text-white whitespace-pre-line leading-tight">--:--</div>
+                <p class="text-[10px] text-rose-400 font-bold uppercase mb-2">간조 (Low)</p>
+                <div id="lowTide" class="text-sm font-black text-white whitespace-pre-line leading-tight">--:--</div>
             </div>
         </div>
 
-        <div class="space-y-3">
-            <a href="https://qr.kakaopay.com/FRK8J0SAD" target="_blank" class="flex items-center justify-center gap-2 bg-[#FAE100] text-[#3C1E1E] py-4 rounded-2xl font-bold text-sm shadow-lg active:scale-95 transition">☕ 찬둥에게 커피 후원하기</a>
-            <div class="bg-[#1e293b] border border-slate-700 rounded-2xl p-5">
+        <div class="space-y-4">
+            <a href="https://qr.kakaopay.com/FRK8J0SAD" target="_blank" class="flex items-center justify-center gap-2 bg-[#FAE100] text-[#3C1E1E] py-4 rounded-2xl font-bold text-sm shadow-lg active:scale-95 transition">
+                ☕ 찬둥에게 커피 후원하기
+            </a>
+
+            <div class="bg-[#1e293b] border border-slate-700 rounded-2xl p-4">
                 <form action="https://www.coupang.com/np/search" method="get" target="_blank" class="flex gap-2">
                     <input type="hidden" name="channel" value="AF4757238">
-                    <input type="text" name="q" placeholder="오늘의 낚시 채비 검색" class="flex-grow p-3 border border-slate-800 rounded-xl text-sm bg-[#020617] text-white outline-none">
-                    <button type="submit" class="bg-sky-600 px-4 rounded-xl font-bold text-xs">검색</button>
+                    <input type="text" name="q" placeholder="오늘의 낚시 채비 검색" class="flex-grow p-3 border border-slate-800 rounded-xl text-sm bg-[#020617] text-white outline-none focus:border-sky-500">
+                    <button type="submit" class="bg-sky-600 px-4 rounded-xl font-bold text-xs text-white active:bg-sky-700 transition">검색</button>
                 </form>
+                <p class="text-[8px] text-slate-500 mt-2 text-center">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
             </div>
         </div>
     </div>
 
     <script>
-        lucide.createIcons();
+        // 발급받으신 인증키입니다.
         const API_KEY = "04c1a8f5901466efccb1971c7896bae7f1364ac500a238cfc25e7c1a7bb25e84";
 
         async function fetchTideData() {
@@ -83,31 +84,36 @@
             
             try {
                 const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-                // 💡 핵심 수정: CORS 우회 프록시 서버(allorigins)를 사용합니다.
-                const originalUrl = `https://apis.data.go.kr/1192000/tidePreInfoService/getTidePreInfo?serviceKey=${API_KEY}&obsCode=${obsCode}&date=${today}&resultType=json`;
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(originalUrl)}`;
+                
+                // 최신 데이터 주소 (v2 기반)
+                const baseUrl = "http://apis.data.go.kr/1192000/tidePreInfoService/getTidePreInfo";
+                const url = `${baseUrl}?serviceKey=${API_KEY}&obsCode=${obsCode}&date=${today}&resultType=json`;
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
 
                 const response = await fetch(proxyUrl);
                 const proxyData = await response.json();
                 
-                // 프록시 서버는 실제 데이터를 'contents' 안에 담아 보냅니다.
+                if (!proxyData.contents) throw new Error("API No Response");
+                
                 const data = JSON.parse(proxyData.contents);
+                const items = data.response?.body?.items?.item;
 
-                if(data.response && data.response.body && data.response.body.items) {
-                    const items = Array.isArray(data.response.body.items.item) ? data.response.body.items.item : [data.response.body.items.item];
-                    let highTimes = items.filter(i => i.tideLevel === '고조').map(i => i.tideTime.slice(11, 16));
-                    let lowTimes = items.filter(i => i.tideLevel === '저조').map(i => i.tideTime.slice(11, 16));
+                if(items) {
+                    const itemList = Array.isArray(items) ? items : [items];
+                    
+                    const high = itemList.filter(i => i.tideLevel === "고조").map(i => i.tideTime.split(" ")[1].slice(0, 5));
+                    const low = itemList.filter(i => i.tideLevel === "저조").map(i => i.tideTime.split(" ")[1].slice(0, 5));
 
                     document.getElementById('statusTitle').innerText = obsName;
-                    document.getElementById('highTide').innerText = highTimes.join("\n") || "정보 없음";
-                    document.getElementById('lowTide').innerText = lowTimes.join("\n") || "정보 없음";
+                    document.getElementById('highTide').innerText = high.join("\n") || "정보 없음";
+                    document.getElementById('lowTide').innerText = low.join("\n") || "정보 없음";
                     document.getElementById('updateTime').innerText = `갱신: ${new Date().toLocaleTimeString()}`;
                 } else {
-                    alert("데이터 형식 오류! 잠시 후 다시 시도해 주세요.");
+                    alert("데이터를 찾을 수 없습니다. 지역 또는 날짜를 확인해 주세요.");
                 }
             } catch (error) {
                 console.error(error);
-                alert("서버 우회 통신 실패! 인증키 활성화까지 1~2시간이 걸릴 수 있습니다.");
+                alert("통신 오류! API 키가 활성화되는 중이거나 서버 응답이 없습니다.");
             } finally {
                 loading.style.display = 'none';
             }
