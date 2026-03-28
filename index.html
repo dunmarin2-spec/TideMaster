@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GearGuard - 맞춤 채비 가이드</title>
 
@@ -18,7 +18,6 @@
         body { font-family: 'Pretendard', sans-serif; background-color: #020617; color: #fff; }
         .chan-doong-signature { font-family: 'Nanum Pen Script', cursive; font-size: 20px; color: #38bdf8; }
         
-        /* 🛠️ [복구] 초기 디자인 카드 스타일 */
         .tide-card { 
             background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); 
             border-radius: 24px; 
@@ -41,7 +40,7 @@
         <div class="space-y-4 mb-6">
             <div>
                 <label class="text-[10px] text-sky-400 font-bold ml-2 mb-1 block uppercase">대상어 선택 (12종)</label>
-                <select id="fishType" onchange="calculateGear()" class="w-full bg-slate-800 border border-slate-700 text-white font-bold p-4 rounded-2xl outline-none focus:border-sky-500 transition shadow-lg text-sm">
+                <select id="fishType" onchange="updateLocationOptions()" class="w-full bg-slate-800 border border-slate-700 text-white font-bold p-4 rounded-2xl outline-none focus:border-sky-500 transition shadow-lg text-sm">
                     <optgroup label="돔류">
                         <option value="감성돔">감성돔 (Black Bream)</option>
                         <option value="뱅에돔">뱅에돔 (Girella)</option>
@@ -65,10 +64,7 @@
             <div>
                 <label class="text-[10px] text-rose-400 font-bold ml-2 mb-1 block uppercase">낚시 장소</label>
                 <select id="locationType" onchange="calculateGear()" class="w-full bg-slate-800 border border-slate-700 text-white font-bold p-4 rounded-2xl outline-none focus:border-rose-500 transition shadow-lg text-sm">
-                    <option value="갯바위">갯바위 (Rock)</option>
-                    <option value="방파제/내항">방파제/내항 (Breakwater)</option>
-                    <option value="선상">선상 (Boat)</option>
-                </select>
+                    </select>
             </div>
         </div>
 
@@ -76,15 +72,15 @@
             <h2 id="recommendTitle" class="text-2xl font-black text-white mb-4 italic">최적 채비 리포트</h2>
             <div class="space-y-3 text-left max-w-[260px] mx-auto text-sm">
                 <div class="flex justify-between border-b border-slate-700 pb-1">
-                    <span class="text-slate-400">원줄 (Main)</span>
+                    <span class="text-slate-400 font-medium">원줄 (Main)</span>
                     <span id="mainLine" class="font-bold text-sky-300">--</span>
                 </div>
                 <div class="flex justify-between border-b border-slate-700 pb-1">
-                    <span class="text-slate-400">목줄 (Leader)</span>
+                    <span class="text-slate-400 font-medium">목줄 (Leader)</span>
                     <span id="leaderLine" class="font-bold text-sky-300">--</span>
                 </div>
                 <div class="flex justify-between border-b border-slate-700 pb-1">
-                    <span class="text-slate-400">바늘/채비</span>
+                    <span class="text-slate-400 font-medium">바늘/채비</span>
                     <span id="hookSize" class="font-bold text-sky-300">--</span>
                 </div>
             </div>
@@ -107,78 +103,57 @@
 
     <script>
         const gearData = {
-            "감성돔": {
-                "갯바위": ["2.5호 세미플로팅", "1.75호 카본", "감성돔 3호 / 0.8호 찌"],
-                "방파제/내항": ["2호 플로팅", "1.5호 카본", "감성돔 2호 / 0.5호 찌"],
-                "선상": ["3호 플로팅", "2.5호 카본", "감성돔 5호 / 막대찌"]
-            },
-            "뱅에돔": {
-                "갯바위": ["1.75호 플로팅", "1.2호 카본", "뱅에돔 4호 / 0찌"],
-                "방파제/내항": ["1.5호 플로팅", "1호 카본", "뱅에돔 3호 / 제로찌"],
-                "선상": ["2호 플로팅", "1.5호 카본", "뱅에돔 6호 / G2찌"]
-            },
-            "참돔": {
-                "갯바위": ["3호 플로팅", "2.5호 카본", "참돔 9호 / 1.5호 찌"],
-                "방파제/내항": ["2.5호 플로팅", "2호 카본", "참돔 7호 / 1호 찌"],
-                "선상": ["합사 1호 (타이라바)", "4호 카본", "타이라바 80~120g"]
-            },
-            "돌돔": {
-                "갯바위": ["나일론 12~20호", "와이어 38~37번", "돌돔 13~15호 (버림찌)"],
-                "방파제/내항": ["나일론 10호", "와이어 37번", "돌돔 11호 (원투)"],
-                "선상": ["합사 3호 (펜슬)", "10호 카본", "돌돔 14호 (구멍치기)"]
-            },
-            "광어/우럭": {
-                "갯바위": ["합사 1.2호", "3호 카본", "지그헤드 1/2oz / 4인치 웜"],
-                "방파제/내항": ["합사 0.8호", "2호 카본", "지그헤드 1/4oz / 3인치 웜"],
-                "선상": ["합사 1.5호 (다운샷)", "4호 카본", "스트레이트 웜 / 40호 봉돌"]
-            },
-            "주꾸미/갑오징어": {
-                "갯바위": ["합사 0.8호", "2호 카본", "왕눈이 에기 / 5호 봉돌"],
-                "방파제/내항": ["합사 0.6호", "1.5호 카본", "수평 에기 / 3호 봉돌"],
-                "선상": ["합사 0.8호", "직결/가짓줄", "에자+에기 / 12~16호 봉돌"]
-            },
-            "무늬오징어": {
-                "갯바위": ["합사 0.8호 (에깅)", "2호 카본", "3.5호 에기 (노멀)"],
-                "방파제/내항": ["합사 0.6호 (에깅)", "1.75호 카본", "3호 에기 (쉘로우)"],
-                "선상": ["합사 0.6호 (팁런)", "2호 카본", "팁런 에기 30~50g"]
-            },
-            "삼치/방어": {
-                "갯바위": ["합사 2호 (쇼어지깅)", "8호 카본", "메탈지그 40~60g"],
-                "방파제/내항": ["합사 1.5호", "6호 카본", "메탈지그 30~40g"],
-                "선상": ["합사 3~5호 (지깅)", "10호+ 카본", "롱지그 150~250g"]
-            },
-            "볼락/전갱이": {
-                "갯바위": ["합사 0.3호", "0.8호 카본", "지그헤드 1.5g / 사바키"],
-                "방파제/내항": ["합사 0.2호", "0.6호 카본", "지그헤드 0.8~1g / 1.5인치 웜"],
-                "선상": ["합사 0.4호", "1호 카본", "역지그헤드 / 던질찌"]
-            },
-            "학꽁치/전어": {
-                "갯바위": ["나일론 1.5호", "0.8호 카본", "학꽁치 4호 / 연태찌"],
-                "방파제/내항": ["나일론 1.2호", "0.6호 카본", "전어 카드채비 (사바키)"],
-                "선상": ["나일론 2호", "1호 카본", "발포찌 채비 / 곤쟁이"]
-            },
-            "배스": {
-                "갯바위": ["카본 10~12lb", "직결", "프리리그 / 텍사스리그"],
-                "방파제/내항": ["카본 4~6lb", "직결", "네꼬리그 / 와키리그"],
-                "선상": ["합사 2호 (버징)", "20lb 카본", "노싱커 / 쉐드웜"]
-            },
-            "숭어": {
-                "갯바위": ["나일론 4호", "2.5호 카본", "숭어 스프링채비 / 떡밥"],
-                "방파제/내항": ["나일론 3호", "2호 카본", "숭어 전용 훌치기 바늘"],
-                "선상": ["나일론 5호", "3호 카본", "숭어 전용 찌채비"]
-            }
+            "감성돔": { "갯바위": ["2.5호 세미플로팅", "1.75호 카본", "감성돔 3호 / 0.8호 찌"], "방파제/내항": ["2호 플로팅", "1.5호 카본", "감성돔 2호 / 0.5호 찌"], "선상": ["3호 플로팅", "2.5호 카본", "감성돔 5호 / 막대찌"] },
+            "뱅에돔": { "갯바위": ["1.75호 플로팅", "1.2호 카본", "뱅에돔 4호 / 0찌"], "방파제/내항": ["1.5호 플로팅", "1호 카본", "뱅에돔 3호 / 제로찌"], "선상": ["2호 플로팅", "1.5호 카본", "뱅에돔 6호 / G2찌"] },
+            "참돔": { "갯바위": ["3호 플로팅", "2.5호 카본", "참돔 9호 / 1.5호 찌"], "방파제/내항": ["2.5호 플로팅", "2호 카본", "참돔 7호 / 1호 찌"], "선상": ["합사 1호 (타이라바)", "4호 카본", "타이라바 80g~120g"] },
+            "돌돔": { "갯바위": ["나일론 12~20호", "와이어 38~37번", "돌돔 13~15호 (버림찌)"], "방파제/내항": ["나일론 10호", "와이어 37번", "돌돔 11호 (원투)"], "선상": ["합사 3호 (펜슬)", "10호 카본", "돌돔 14호 (구멍치기)"] },
+            "광어/우럭": { "갯바위": ["합사 1.2호", "3호 카본", "지그헤드 1/2oz / 4인치 웜"], "방파제/내항": ["합사 0.8호", "2호 카본", "지그헤드 1/4oz / 3인치 웜"], "선상": ["합사 1.5호 (다운샷)", "4호 카본", "스트레이트 웜 / 40호 봉돌"] },
+            "주꾸미/갑오징어": { "갯바위": ["합사 0.8호", "2호 카본", "왕눈이 에기 / 5호 봉돌"], "방파제/내항": ["합사 0.6호", "1.5호 카본", "수평 에기 / 3호 봉돌"], "선상": ["합사 0.8호", "직결/가짓줄", "에자+에기 / 12~16호 봉돌"] },
+            "무늬오징어": { "갯바위": ["합사 0.8호 (에깅)", "2호 카본", "3.5호 에기 (노멀)"], "방파제/내항": ["합사 0.6호 (에깅)", "1.75호 카본", "3호 에기 (쉘로우)"], "선상": ["합사 0.6호 (팁런)", "2호 카본", "팁런 에기 30~50g"] },
+            "삼치/방어": { "갯바위": ["합사 2호 (쇼어지깅)", "8호 카본", "메탈지그 40~60g"], "방파제/내항": ["합사 1.5호", "6호 카본", "메탈지그 30~40g"], "선상": ["합사 3~5호 (지깅)", "10호+ 카본", "롱지그 150~250g"] },
+            "볼락/전갱이": { "갯바위": ["합사 0.3호", "0.8호 카본", "지그헤드 1.5g / 사바키"], "방파제/내항": ["합사 0.2호", "0.6호 카본", "지그헤드 0.8~1g / 1.5인치 웜"], "선상": ["합사 0.4호", "1호 카본", "역지그헤드 / 던질찌"] },
+            "학꽁치/전어": { "갯바위": ["나일론 1.5호", "0.8호 카본", "학꽁치 4호 / 연태찌"], "방파제/내항": ["나일론 1.2호", "0.6호 카본", "전어 카드채비 (사바키)"], "선상": ["나일론 2호", "1호 카본", "발포찌 채비 / 곤쟁이"] },
+            "숭어": { "갯바위": ["나일론 4호", "2.5호 카본", "숭어 스프링채비 / 떡밥"], "방파제/내항": ["나일론 3호", "2호 카본", "숭어 전용 훌치기 바늘"], "선상": ["나일론 5호", "3호 카본", "숭어 전용 찌채비"] },
+            
+            // --- 민물 어종 데이터 ---
+            "배스": { "워킹": ["카본 10~12lb", "직결", "프리리그/텍사스리그"], "보트": ["합사 2호 (버징)", "20lb 카본", "노싱커/버징"], "수로/강": ["카본 4~6lb", "직결", "네꼬/와키리그"] }
         };
+
+        // 장소 옵션을 민물/바다에 맞게 교체하는 함수
+        function updateLocationOptions() {
+            const fish = document.getElementById('fishType').value;
+            const locSelect = document.getElementById('locationType');
+            const isFreshwater = (fish === "배스");
+
+            locSelect.innerHTML = ""; // 기존 옵션 비우기
+
+            const options = isFreshwater 
+                ? ["워킹", "보트", "수로/강"] 
+                : ["갯바위", "방파제/내항", "선상"];
+
+            options.forEach(opt => {
+                const el = document.createElement("option");
+                el.value = opt;
+                el.innerText = opt;
+                locSelect.appendChild(el);
+            });
+
+            calculateGear(); // 옵션 변경 후 결과 즉시 갱신
+        }
 
         function calculateGear() {
             const fish = document.getElementById('fishType').value;
             const loc = document.getElementById('locationType').value;
+            
+            if (!gearData[fish] || !gearData[fish][loc]) return;
+            
             const selected = gearData[fish][loc];
 
             document.getElementById('recommendTitle').innerText = `${fish} (${loc}) 리포트`;
             document.getElementById('mainLine').innerText = selected[0];
             document.getElementById('leaderLine').innerText = selected[1];
             document.getElementById('hookSize').innerText = selected[2];
-            document.getElementById('coupangInput').value = `${fish} 낚시 용품`;
+            document.getElementById('coupangInput').value = `${fish} 낚시 소모품`;
         }
 
         function shopOnCoupang() {
@@ -187,7 +162,8 @@
             window.open(`https://www.coupang.com/np/search?q=${query}&channel=AF4757238`, '_blank');
         }
 
-        window.onload = calculateGear;
+        // 페이지 로드 시 첫 번째 어종에 맞춰 장소 옵션 생성
+        window.onload = updateLocationOptions;
     </script>
 </body>
 </html>
