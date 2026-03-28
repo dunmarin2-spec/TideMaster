@@ -22,7 +22,7 @@
                 <span class="chan-doong-signature">찬둥의</span>
                 <h1 class="text-3xl font-black text-sky-400 italic tracking-tighter">TideGuard</h1>
             </div>
-            <div class="text-right text-[10px] text-slate-500 font-bold uppercase">Data Portal v4.1</div>
+            <div class="text-right text-[10px] text-slate-500 font-bold uppercase text-sky-500">Bypass Mode</div>
         </header>
 
         <div class="mb-6">
@@ -42,19 +42,19 @@
 
         <div id="mainDisplay" class="tide-card mb-4 text-center py-10 relative overflow-hidden">
             <div id="loadingOverlay" class="absolute inset-0 bg-slate-900/90 flex items-center justify-center z-50 hidden">
-                <div class="animate-pulse font-bold text-sky-400">국가 데이터 로딩 중...</div>
+                <div class="animate-pulse font-bold text-sky-400">보안 우회 통신 중...</div>
             </div>
-            <p id="updateTime" class="text-[9px] text-slate-500 mb-1">DATA FROM PORTAL</p>
-            <h2 id="statusTitle" class="text-3xl font-black text-white italic">TIDE REPORT</h2>
+            <p id="updateTime" class="text-[9px] text-slate-500 mb-1">REALTIME DATA BY CHAN-DOONG</p>
+            <h2 id="statusTitle" class="text-3xl font-black text-white italic">SELECT AREA</h2>
         </div>
 
         <div class="grid grid-cols-2 gap-3 mb-8">
             <div class="tide-card text-center p-5 border-b-4 border-b-sky-500">
-                <p class="text-[10px] text-sky-400 font-bold uppercase mb-2">오늘의 만조 (고조)</p>
+                <p class="text-[10px] text-sky-400 font-bold uppercase mb-2">만조 (고조)</p>
                 <div id="highTide" class="text-lg font-black text-white whitespace-pre-line leading-tight">--:--</div>
             </div>
             <div class="tide-card text-center p-5 border-b-4 border-b-rose-500">
-                <p class="text-[10px] text-rose-400 font-bold uppercase mb-2">오늘의 간조 (저조)</p>
+                <p class="text-[10px] text-rose-400 font-bold uppercase mb-2">간조 (저조)</p>
                 <div id="lowTide" class="text-lg font-black text-white whitespace-pre-line leading-tight">--:--</div>
             </div>
         </div>
@@ -64,8 +64,8 @@
             <div class="bg-[#1e293b] border border-slate-700 rounded-2xl p-5">
                 <form action="https://www.coupang.com/np/search" method="get" target="_blank" class="flex gap-2">
                     <input type="hidden" name="channel" value="AF4757238">
-                    <input type="text" name="q" placeholder="전문 낚시 장비 최저가" class="flex-grow p-3 border border-slate-800 rounded-xl text-sm bg-[#020617] text-white outline-none">
-                    <button type="submit" class="bg-sky-600 px-4 rounded-xl font-bold text-xs active:scale-95 transition">검색</button>
+                    <input type="text" name="q" placeholder="오늘의 낚시 채비 검색" class="flex-grow p-3 border border-slate-800 rounded-xl text-sm bg-[#020617] text-white outline-none">
+                    <button type="submit" class="bg-sky-600 px-4 rounded-xl font-bold text-xs">검색</button>
                 </form>
             </div>
         </div>
@@ -83,27 +83,31 @@
             
             try {
                 const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-                // 💡 공공데이터포털 전용 API 엔드포인트로 수정 (CORS 이슈 대응을 위한 프록시 레이어 포함 구조)
-                const url = `https://apis.data.go.kr/1192000/tidePreInfoService/getTidePreInfo?serviceKey=${API_KEY}&obsCode=${obsCode}&date=${today}&resultType=json`;
+                // 💡 핵심 수정: CORS 우회 프록시 서버(allorigins)를 사용합니다.
+                const originalUrl = `https://apis.data.go.kr/1192000/tidePreInfoService/getTidePreInfo?serviceKey=${API_KEY}&obsCode=${obsCode}&date=${today}&resultType=json`;
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(originalUrl)}`;
 
-                const response = await fetch(url);
-                const data = await response.json();
+                const response = await fetch(proxyUrl);
+                const proxyData = await response.json();
+                
+                // 프록시 서버는 실제 데이터를 'contents' 안에 담아 보냅니다.
+                const data = JSON.parse(proxyData.contents);
 
                 if(data.response && data.response.body && data.response.body.items) {
-                    const items = data.response.body.items.item;
+                    const items = Array.isArray(data.response.body.items.item) ? data.response.body.items.item : [data.response.body.items.item];
                     let highTimes = items.filter(i => i.tideLevel === '고조').map(i => i.tideTime.slice(11, 16));
                     let lowTimes = items.filter(i => i.tideLevel === '저조').map(i => i.tideTime.slice(11, 16));
 
                     document.getElementById('statusTitle').innerText = obsName;
                     document.getElementById('highTide').innerText = highTimes.join("\n") || "정보 없음";
                     document.getElementById('lowTide').innerText = lowTimes.join("\n") || "정보 없음";
-                    document.getElementById('updateTime').innerText = `최신 갱신: ${new Date().toLocaleTimeString()}`;
+                    document.getElementById('updateTime').innerText = `갱신: ${new Date().toLocaleTimeString()}`;
                 } else {
-                    alert("데이터를 가져오는 중입니다. 잠시 후 다시 선택해 주세요!");
+                    alert("데이터 형식 오류! 잠시 후 다시 시도해 주세요.");
                 }
             } catch (error) {
                 console.error(error);
-                alert("서버 연결 실패! 공공데이터 서버 점검 중일 수 있습니다.");
+                alert("서버 우회 통신 실패! 인증키 활성화까지 1~2시간이 걸릴 수 있습니다.");
             } finally {
                 loading.style.display = 'none';
             }
