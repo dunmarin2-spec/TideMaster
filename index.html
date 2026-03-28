@@ -39,32 +39,39 @@
 
         <div class="space-y-4 mb-6">
             <div>
-                <label class="text-[10px] text-sky-400 font-bold ml-2 mb-1 block uppercase">대상어 선택 (12종)</label>
+                <label class="text-[10px] text-sky-400 font-bold ml-2 mb-1 block uppercase">대상어 선택 (업데이트)</label>
                 <select id="fishType" onchange="updateLocationOptions()" class="w-full bg-slate-800 border border-slate-700 text-white font-bold p-4 rounded-2xl outline-none focus:border-sky-500 transition shadow-lg text-sm">
-                    <optgroup label="돔류">
-                        <option value="감성돔">감성돔 (Black Bream)</option>
-                        <option value="뱅에돔">뱅에돔 (Girella)</option>
-                        <option value="참돔">참돔 (Red Sea Bream)</option>
-                        <option value="돌돔">돌돔 (Rock Bream)</option>
+                    <optgroup label="바다 - 돔/두족류">
+                        <option value="감성돔">감성돔</option>
+                        <option value="뱅에돔">뱅에돔</option>
+                        <option value="참돔">참돔</option>
+                        <option value="돌돔">돌돔</option>
+                        <option value="주꾸미/갑오징어">주꾸미/갑오징어</option>
+                        <option value="무늬오징어">무늬오징어</option>
                     </optgroup>
-                    <optgroup label="루어/에깅">
-                        <option value="광어/우럭">광어/우럭 (Flatfish)</option>
-                        <option value="주꾸미/갑오징어">주꾸미/갑오징어 (Squid)</option>
-                        <option value="무늬오징어">무늬오징어 (Egging)</option>
-                        <option value="삼치/방어">삼치/방어 (Jigging)</option>
-                        <option value="볼락/전갱이">볼락/전갱이 (Light Game)</option>
+                    <optgroup label="바다 - 루어/기타">
+                        <option value="광어/우럭">광어/우럭</option>
+                        <option value="삼치/방어">삼치/방어</option>
+                        <option value="볼락/전갱이">볼락/전갱이</option>
+                        <option value="학꽁치/전어">학꽁치/전어</option>
+                        <option value="숭어">숭어</option>
                     </optgroup>
-                    <optgroup label="잡어/민물">
-                        <option value="학꽁치/전어">학꽁치/전어 (Sabiki)</option>
-                        <option value="배스">배스 (Bass Fishing)</option>
-                        <option value="숭어">숭어 (Mullet)</option>
+                    <optgroup label="민물 - 루어/찌낚시">
+                        <option value="배스">배스 (Bass)</option>
+                        <option value="쏘가리/꺽지">쏘가리/꺽지 (Lure)</option>
+                        <option value="가물치">가물치 (Snakehead)</option>
+                        <option value="붕어(바닥)">붕어 (토종/바닥)</option>
+                        <option value="붕어(중층)">붕어 (떡붕어/내림)</option>
+                        <option value="잉어/향어">잉어/향어</option>
+                        <option value="메기/장어">메기/장어</option>
+                        <option value="송어">송어 (Trout)</option>
                     </optgroup>
                 </select>
             </div>
             <div>
                 <label class="text-[10px] text-rose-400 font-bold ml-2 mb-1 block uppercase">낚시 장소</label>
                 <select id="locationType" onchange="calculateGear()" class="w-full bg-slate-800 border border-slate-700 text-white font-bold p-4 rounded-2xl outline-none focus:border-rose-500 transition shadow-lg text-sm">
-                    </select>
+                </select>
             </div>
         </div>
 
@@ -103,6 +110,7 @@
 
     <script>
         const gearData = {
+            // --- 바다 ---
             "감성돔": { "갯바위": ["2.5호 세미플로팅", "1.75호 카본", "감성돔 3호 / 0.8호 찌"], "방파제/내항": ["2호 플로팅", "1.5호 카본", "감성돔 2호 / 0.5호 찌"], "선상": ["3호 플로팅", "2.5호 카본", "감성돔 5호 / 막대찌"] },
             "뱅에돔": { "갯바위": ["1.75호 플로팅", "1.2호 카본", "뱅에돔 4호 / 0찌"], "방파제/내항": ["1.5호 플로팅", "1호 카본", "뱅에돔 3호 / 제로찌"], "선상": ["2호 플로팅", "1.5호 카본", "뱅에돔 6호 / G2찌"] },
             "참돔": { "갯바위": ["3호 플로팅", "2.5호 카본", "참돔 9호 / 1.5호 찌"], "방파제/내항": ["2.5호 플로팅", "2호 카본", "참돔 7호 / 1호 찌"], "선상": ["합사 1호 (타이라바)", "4호 카본", "타이라바 80g~120g"] },
@@ -115,21 +123,34 @@
             "학꽁치/전어": { "갯바위": ["나일론 1.5호", "0.8호 카본", "학꽁치 4호 / 연태찌"], "방파제/내항": ["나일론 1.2호", "0.6호 카본", "전어 카드채비 (사바키)"], "선상": ["나일론 2호", "1호 카본", "발포찌 채비 / 곤쟁이"] },
             "숭어": { "갯바위": ["나일론 4호", "2.5호 카본", "숭어 스프링채비 / 떡밥"], "방파제/내항": ["나일론 3호", "2호 카본", "숭어 전용 훌치기 바늘"], "선상": ["나일론 5호", "3호 카본", "숭어 전용 찌채비"] },
             
-            // --- 민물 어종 데이터 ---
-            "배스": { "워킹": ["카본 10~12lb", "직결", "프리리그/텍사스리그"], "보트": ["합사 2호 (버징)", "20lb 카본", "노싱커/버징"], "수로/강": ["카본 4~6lb", "직결", "네꼬/와키리그"] }
+            // --- 민물 추가 데이터 ---
+            "배스": { "워킹": ["카본 10~12lb", "직결", "프리리그/텍사스리그"], "보트": ["합사 2호", "20lb 카본", "노싱커/버징"], "수로/강": ["카본 4~6lb", "직결", "네꼬/와키리그"] },
+            "쏘가리/꺽지": { "수로/강": ["합사 0.6호", "1.5호 카본", "1/10oz 지그헤드 / 미노우"], "노지/저수지": ["합사 0.4호", "1.2호 카본", "1/16oz 지그헤드 / 웜"], "관리형/양어장": ["모노 3lb", "직결", "마이크로 스푼"] },
+            "가물치": { "노지/저수지": ["합사 8~10호", "직결", "중심 고정용 프로그"], "수로/강": ["합사 6호", "직결", "헤비 텍사스리그"], "관리형/양어장": ["합사 5호", "직결", "프로그 루어"] },
+            "붕어(바닥)": { "노지/저수지": ["카본 2호", "카본 1.2호", "붕어 7호 / 바닥찌"], "관리형/양어장": ["카본 1.5호", "모노 0.8호", "붕어 5호 / 예민한 바닥찌"], "수로/강": ["카본 2.5호", "카본 1.5호", "붕어 8호 / 고부력찌"] },
+            "붕어(중층)": { "노지/저수지": ["모노 1호", "모노 0.5호", "떡붕어 5호 / 중층찌"], "관리형/양어장": ["모노 0.8호", "모노 0.4호", "떡붕어 4호 / 내림찌"], "수로/강": ["모노 1.2호", "모노 0.6호", "떡붕어 6호 / 유동찌"] },
+            "잉어/향어": { "노지/저수지": ["카본 4호", "카본 3호", "잉어 12호 / 대물찌"], "관리형/양어장": ["카본 3호", "카본 2호", "잉어 10호 / 고부력찌"], "수로/강": ["카본 5호", "카본 4호", "잉어 13호 / 원투채비"] },
+            "메기/장어": { "수로/강": ["나일론 5호", "카본 4호", "세이코 14호 / 끝보기"], "노지/저수지": ["나일론 4호", "카본 3호", "메기 12호 / 생미끼용 찌"], "관리형/양어장": ["나일론 3호", "카본 2.5호", "세이코 12호 / 장어 전용"] },
+            "송어": { "관리형/양어장": ["에스테르 0.3호", "0.6호 카본", "송어 훅 / 마이크로 스푼"], "수로/강": ["모노 4lb", "직결", "초소형 미노우"], "노지/저수지": ["모노 3lb", "직결", "송어 웜 (파워베이트)"] }
         };
 
-        // 장소 옵션을 민물/바다에 맞게 교체하는 함수
+        const freshwaterFish = ["배스", "쏘가리/꺽지", "가물치", "붕어(바닥)", "붕어(중층)", "잉어/향어", "메기/장어", "송어"];
+
         function updateLocationOptions() {
             const fish = document.getElementById('fishType').value;
             const locSelect = document.getElementById('locationType');
-            const isFreshwater = (fish === "배스");
+            const isFreshwater = freshwaterFish.includes(fish);
 
-            locSelect.innerHTML = ""; // 기존 옵션 비우기
+            locSelect.innerHTML = "";
 
-            const options = isFreshwater 
-                ? ["워킹", "보트", "수로/강"] 
-                : ["갯바위", "방파제/내항", "선상"];
+            let options;
+            if (fish === "배스") {
+                options = ["워킹", "보트", "수로/강"];
+            } else if (isFreshwater) {
+                options = ["노지/저수지", "관리형/양어장", "수로/강"];
+            } else {
+                options = ["갯바위", "방파제/내항", "선상"];
+            }
 
             options.forEach(opt => {
                 const el = document.createElement("option");
@@ -138,7 +159,7 @@
                 locSelect.appendChild(el);
             });
 
-            calculateGear(); // 옵션 변경 후 결과 즉시 갱신
+            calculateGear();
         }
 
         function calculateGear() {
@@ -153,7 +174,7 @@
             document.getElementById('mainLine').innerText = selected[0];
             document.getElementById('leaderLine').innerText = selected[1];
             document.getElementById('hookSize').innerText = selected[2];
-            document.getElementById('coupangInput').value = `${fish} 낚시 소모품`;
+            document.getElementById('coupangInput').value = `${fish} 낚시 용품`;
         }
 
         function shopOnCoupang() {
@@ -162,7 +183,6 @@
             window.open(`https://www.coupang.com/np/search?q=${query}&channel=AF4757238`, '_blank');
         }
 
-        // 페이지 로드 시 첫 번째 어종에 맞춰 장소 옵션 생성
         window.onload = updateLocationOptions;
     </script>
 </body>
